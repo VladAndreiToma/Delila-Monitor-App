@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=HVmodule_CAEN_SY4527_database
+      - INFLUXDB_ADMIN_ENABLED=false
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+      - ./db_init/init-influxdb.sh:/docker-entrypoint-initdb.d/init-influxdb.sh
+
+  grafana:
+    image: grafana/grafana:8.4.3
+    container_name: grafana
+    ports:
+      - "3005:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=puppexUsesGrafana
+    depends_on:
+      - influxdb
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  influxdb_data:
+  grafana_data:
