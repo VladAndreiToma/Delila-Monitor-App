@@ -1,6 +1,12 @@
 version: '3.8'
-
+# the docker version used in this app ================
+# list of services ---> reserved keywords
 services:
+  # i source an influx database first version 1.8
+  # container associated will be called inflxudb
+  # comm on 8088 localhost port
+  # no login necessary
+  # mounts stuff from influxdb /var/lib
   influxdb:
     image: influxdb:1.8
     container_name: influxdb
@@ -11,13 +17,16 @@ services:
       - INFLUXDB_ADMIN_ENABLED=false
     volumes:
       - influxdb_data:/var/lib/influxdb
-      - ./db_init/init-influxdb.sh:/docker-entrypoint-initdb.d/init-influxdb.sh
-
+  # second is grafana server 8.4.3 version
+  # simple password admin
+  # comm on 3005 local machine
+  # connects with influxdb
+  # source from /var/lib/grafana
   grafana:
     image: grafana/grafana:8.4.3
     container_name: grafana
     ports:
-      - "3005:3000"
+      - "3005:3000"  # Map host port 3005 to container port 3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=puppexUsesGrafana
     depends_on:
@@ -28,3 +37,7 @@ services:
 volumes:
   influxdb_data:
   grafana_data:
+
+networks:
+  default:
+    driver: bridge
